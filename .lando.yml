@@ -1,0 +1,43 @@
+name: torrent-tracker
+recipe: laravel
+config:
+  php: 8.1
+  webroot: public
+  composer_version: 2-latest
+  via: nginx
+  database: postgres:12
+  cache: redis
+proxy:
+  adminer:
+    - adminer.torrent-tracker.lndo.site:8080
+  mailhog:
+    - mailhog.torrent-tracker.lndo.site
+services:
+  appserver:
+    build_as_root:
+      - apt-get update -y
+      - apt-get install cron -y
+      - apt-get install supervisor -y
+      - cp -f /app/.lando/docker-php-entrypoint.sh /usr/local/bin/docker-php-entrypoint
+      - cp -f /app/.lando/laravel-worker.conf /etc/supervisor/conf.d/laravel-worker.conf
+    run_as_root:
+      - service cron start
+      - service supervisor start
+      - supervisorctl start laravel-worker:*
+    run:
+      - "cd $LANDO_MOUNT && composer install"
+      - crontab /app/.lando/cron.txt
+  database:
+    environment:
+      - POSTGRESQL_PASSWORD=laravel
+  adminer:
+    type: compose
+    services:
+      image: adminer
+      environment:
+        - ADMINER_DEFAULT_SERVER=database
+      command: docker-php-entrypoint php -S [::]:8080 -t /var/www/html
+  mailhog:
+    type: mailhog
+    hogfrom:
+      - appserver

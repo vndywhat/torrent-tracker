@@ -36,15 +36,11 @@ jobs:
       run: |
         mkdir -p database
         touch database/database.sqlite
-        touch database/database_testing.sqlite
 
     - name: Run migrations
       run: php artisan migrate
 
     - name: Execute tests (Unit and Feature tests) via PHPUnit
-      env:
-        DB_CONNECTION: sqlite
-        DB_DATABASE: database/database.sqlite
       run: vendor/bin/phpunit --coverage-clover coverage.xml
 
     - uses: codecov/codecov-action@v2

@@ -14,6 +14,12 @@ proxy:
     - mailhog.torrent-tracker.lndo.site
 services:
   appserver:
+    xdebug: true
+    config:
+      php: .lando/php.ini
+    overrides:
+      environment:
+        PHP_IDE_CONFIG: "serverName=appserver"
     build_as_root:
       - apt-get update -y
       - apt-get install cron -y

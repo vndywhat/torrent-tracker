@@ -20,6 +20,7 @@ services:
     overrides:
       environment:
         PHP_IDE_CONFIG: "serverName=appserver"
+        XDEBUG_MODE: "develop,coverage"
     build_as_root:
       - apt-get update -y
       - apt-get install cron -y
@@ -39,11 +40,11 @@ services:
   adminer:
     type: compose
     services:
-      image: adminer
+      image: adminer:latest
       environment:
         - ADMINER_DEFAULT_SERVER=database
       command: docker-php-entrypoint php -S [::]:8080 -t /var/www/html
   mailhog:
-    type: mailhog
+    type: mailhog:v1.0.1
     hogfrom:
       - appserver

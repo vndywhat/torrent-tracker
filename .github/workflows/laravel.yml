@@ -36,6 +36,7 @@ jobs:
       run: |
         mkdir -p database
         touch database/database.sqlite
+        touch database/database_testing.sqlite
 
     - name: Run migrations
       run: php artisan migrate
